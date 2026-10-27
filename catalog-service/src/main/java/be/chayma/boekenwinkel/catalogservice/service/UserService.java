@@ -1,5 +1,6 @@
 package be.chayma.boekenwinkel.catalogservice.service;
 
+import be.chayma.boekenwinkel.catalogservice.dto.LoginRequest;
 import be.chayma.boekenwinkel.catalogservice.dto.RegisterRequest;
 import be.chayma.boekenwinkel.catalogservice.dto.UserResponse;
 import be.chayma.boekenwinkel.catalogservice.exception.UserAlreadyExistsException;
@@ -46,5 +47,24 @@ public class UserService {
 
         // 5. Stuur een UserResponse terug (zonder wachtwoord)
         return new UserResponse(savedUser.getId(), savedUser.getEmail(), savedUser.getName());
+    }
+
+    /**
+     * Logt een gebruiker in.
+     * @param request De email en het wachtwoord.
+     * @return De user info (zonder wachtwoord) als de login slaagt.
+     */
+    public UserResponse login(LoginRequest request) {
+        // 1. Zoek de gebruiker op basis van email
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new RuntimeException("Ongeldige inloggegevens."));
+
+        // 2. Vergelijk het ingevoerde wachtwoord met de hash in de database
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            throw new RuntimeException("Ongeldige inloggegevens.");
+        }
+
+        // 3. Login geslaagd: stuur de user info terug
+        return new UserResponse(user.getId(), user.getEmail(), user.getName());
     }
 }
