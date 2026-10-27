@@ -1,5 +1,6 @@
 package be.chayma.boekenwinkel.catalogservice.controller;
 
+import be.chayma.boekenwinkel.catalogservice.dto.LoginRequest;
 import be.chayma.boekenwinkel.catalogservice.dto.RegisterRequest;
 import be.chayma.boekenwinkel.catalogservice.dto.UserResponse;
 import be.chayma.boekenwinkel.catalogservice.service.UserService;
@@ -14,7 +15,7 @@ import java.net.URI;
 
 /**
  * REST-controller voor gebruikersbeheer.
- * Behandelt registratie van nieuwe gebruikers.
+ * Behandelt registratie en login van gebruikers.
  */
 @RestController
 @RequestMapping("/api/users")
@@ -39,5 +40,15 @@ public class UserController {
         return ResponseEntity
                 .created(URI.create("/api/users/" + createdUser.id()))
                 .body(createdUser);
+    }
+
+    /**
+     * Logt een gebruiker in.
+     * Geeft een 200 OK terug bij succes.
+     */
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse> loginUser(@Valid @RequestBody LoginRequest request) {
+        UserResponse user = userService.login(request);
+        return ResponseEntity.ok(user);
     }
 }
