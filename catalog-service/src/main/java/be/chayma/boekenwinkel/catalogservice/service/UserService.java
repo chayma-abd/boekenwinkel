@@ -2,6 +2,7 @@ package be.chayma.boekenwinkel.catalogservice.service;
 
 import be.chayma.boekenwinkel.catalogservice.dto.RegisterRequest;
 import be.chayma.boekenwinkel.catalogservice.dto.UserResponse;
+import be.chayma.boekenwinkel.catalogservice.exception.UserAlreadyExistsException;
 import be.chayma.boekenwinkel.catalogservice.model.User;
 import be.chayma.boekenwinkel.catalogservice.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,7 +29,7 @@ public class UserService {
 
         // 1. Check of de gebruiker al bestaat (edge case!)
         if (userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Er bestaat al een gebruiker met dit e-mailadres.");
+            throw new UserAlreadyExistsException("Er bestaat al een gebruiker met dit e-mailadres.");
         }
 
         // 2. Maak een nieuwe User aan

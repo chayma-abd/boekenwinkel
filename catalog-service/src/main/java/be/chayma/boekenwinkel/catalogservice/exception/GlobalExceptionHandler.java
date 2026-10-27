@@ -12,8 +12,8 @@ import java.net.URI;
  * Zet exceptions uit de service om naar duidelijke HTTP-antwoorden
  * volgens de standaard voor foutmeldingen (RFC 7807).
  */
-@Hidden // <-- Zorgt ervoor dat Swagger deze klasse negeert
-@RestControllerAdvice(basePackages = "be.chayma.boekenwinkel.catalogservice.controller") // <-- Beperkt tot jouw controllers
+@Hidden // Zorgt ervoor dat Swagger deze klasse negeert
+@RestControllerAdvice(basePackages = "be.chayma.boekenwinkel.catalogservice.controller") // Beperkt tot jouw controllers
 public class GlobalExceptionHandler {
 
     /**
@@ -35,6 +35,17 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
         problem.setType(URI.create("https://boekenwinkel.example/problems/book-already-exists"));
         problem.setTitle("Boek bestaat al");
+        return problem;
+    }
+
+    /**
+     * De gebruiker bestaat al: antwoordt met 409 Conflict.
+     */
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ProblemDetail handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problem.setType(URI.create("https://boekenwinkel.example/problems/user-already-exists"));
+        problem.setTitle("Gebruiker bestaat al");
         return problem;
     }
 }
